@@ -1,10 +1,11 @@
+from typing import Any
 import stripe
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
-from .models import Price
+from .models import Price, Product
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -37,3 +38,16 @@ class SuccessView(TemplateView):
 
 class CancelView(TemplateView):
     template_name = "cancel.html"
+
+class ProductLandingPageView(TemplateView):
+    template_name = "landing.html"
+
+    def get_context_data(self, **kwargs):
+        product = Product.objects.get(name="Test Product")
+        prices = Price.objects.filter(product=product)
+        context = super(ProductLandingPageView, self).get_context_data(**kwargs)
+        context.update({
+            "product": product,
+            "prices": prices
+        })
+        return context
