@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
+from django.views.generic import TemplateView
 from .models import Price
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -16,6 +17,7 @@ class CreateCheckoutSessionView(View):
         domain = "http://127.0.0.1:8000"
         if settings.DEBUG:
             domain = "http://127.0.0.1:8000"
+        # Pass in parameters to the Stripe checkout function
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
@@ -29,3 +31,9 @@ class CreateCheckoutSessionView(View):
             cancel_url=domain + '/cancel/',
         )
         return redirect(checkout_session.url)
+    
+class SuccessView(TemplateView):
+    template_name = "success.html"
+
+class CancelView(TemplateView):
+    template_name = "cancel.html"
