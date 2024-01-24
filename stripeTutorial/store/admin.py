@@ -3,7 +3,7 @@ from .models import Price, Product
 
 # Register your models here.
 admin.site.register(Price)
-admin.site.register(Product)
+
 
 
 class PriceInlineAdmin(admin.TabularInline):
