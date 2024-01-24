@@ -118,7 +118,7 @@ class StripeIntentView(View):
             return JsonResponse({'error': str(e)})
         
 
-class CustomPaymentIntent(TemplateView):
+class CustomPaymentView(TemplateView):
     template_name = "custom_payment.html"
 
     def get_context_data(self, **kwargs):
