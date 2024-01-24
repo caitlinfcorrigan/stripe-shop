@@ -10,6 +10,7 @@
 
             <div>
                 <h5>${{ price.get_display_price }}</h5>
+                <!-- Redirect to the Stripe Checkout for single product -->
                 <form action="{% url 'create-checkout-session' price.id %}" method="POST">
                     {% csrf_token %}
                     <button type="submit">Checkout</button>
