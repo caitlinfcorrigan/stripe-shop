@@ -2,9 +2,11 @@ from typing import Any
 import stripe
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
 from .models import Price, Product
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -52,3 +54,45 @@ class ProductLandingPageView(TemplateView):
             "prices": prices
         })
         return context
+
+# Stripe webhooks handler (to validate payment)
+# csrf exempt bc Stripe sends the POST request w/o token, which is normally required by Django
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+    # Verify Stripe sent the webhook
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+    
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        customer_email = session["customer_details"]["email"]
+        # payment_intent = session["payment_intent"]
+        line_items = stripe.checkout.Session.list_line_items(session["id"])
+
+        # Grabs first line item since there is only one
+        stripe_price_id = line_items["data"][0]["price"]["id"]
+        price = Price.objects.get(stripe_price_id=stripe_price_id)
+        product = price.product
+
+        # Send email to customer
+        # My email is not configured to grant Django access
+        send_mail(
+            subject="Purchase complete",
+            message="Thanks for shopping!",
+            recipient_list=[customer_email],
+            from_email="caitlinfcorrigan@gmail.com"
+        )
+        
+    return HttpResponse(status=200)
