@@ -96,3 +96,38 @@ def stripe_webhook(request):
         )
         
     return HttpResponse(status=200)
+
+class StripeIntentView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            req_json = json.loads(request.body)
+            customer = stripe.Customer.create(email=req_json['email'])
+            price = Price.objects.get(id=self.kwargs["pk"])
+            intent = stripe.PaymentIntent.create(
+                amount=price.price,
+                currency='usd',
+                customer=customer['id'],
+                metadata={
+                    "price_id": price.id
+                }
+            )
+            return JsonResponse({
+                "clientSecret": intent['client_secret']
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+        
+
+class CustomPaymentIntent(TemplateView):
+    template_name = "custom_payment.html"
+
+    def get_context_data(self, **kwargs):
+        product = Product.objects.get(name="Test Product")
+        prices = Price.objects.filter(product=product)
+        context = super(CustomPaymentView, self).get_context_data(**kwargs)
+        context.update({
+            "product": product,
+            "prices": prices,
+            "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
+        })
+        return context
