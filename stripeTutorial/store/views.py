@@ -11,6 +11,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 
+# Stripe Checkout page (low-code)
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         price = Price.objects.get(id=self.kwargs["pk"])
