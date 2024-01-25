@@ -1,5 +1,5 @@
 from typing import Any
-import stripe
+import stripe, json
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -55,7 +55,7 @@ class ProductLandingPageView(TemplateView):
         })
         return context
 
-# Stripe webhooks handler (to validate payment)
+# Stripe webhook event handler (to validate payment)
 # csrf exempt bc Stripe sends the POST request w/o token, which is normally required by Django
 @csrf_exempt
 def stripe_webhook(request):
@@ -88,6 +88,24 @@ def stripe_webhook(request):
 
         # Send email to customer
         # My email is not configured to grant Django access
+        send_mail(
+            subject="Purchase complete",
+            message="Thanks for shopping!",
+            recipient_list=[customer_email],
+            from_email="caitlinfcorrigan@gmail.com"
+        )
+    elif event["type"] == "payment_intent.succeeded":
+        intent = event['data']['object']
+
+        stripe_customer_id = intent['customer']
+        stripe_customer = stripe.Customer.retrieve(stripe_customer_id)
+
+        customer_email = stripe_customer['email']
+        price_id = intent['metadata']['price_id']
+
+        price = Price.objects.get(id=price_id)
+        product = price.product
+
         send_mail(
             subject="Purchase complete",
             message="Thanks for shopping!",
