@@ -4,7 +4,9 @@ from .views import (
     SuccessView,
     CancelView,
     ProductLandingPageView,
-    stripe_webhook
+    stripe_webhook,
+    StripeIntentView,
+    CustomPaymentView
 )
 
 urlpatterns = [
@@ -13,4 +15,6 @@ urlpatterns = [
     path('create-checkout-session/<pk>/', CreateCheckoutSessionView.as_view(), name='create-checkout-session'),
     path('', ProductLandingPageView.as_view(), name='landing'),
     path('webhooks/stripe/', stripe_webhook, name='stripe-webhook'),
+    path('create-payment-intent/<pk>/', StripeIntentView.as_view(), name='create-payment-intent'),
+    path('custom-payment/', CustomPaymentView.as_view(), name='custom-payment'),
 ]
