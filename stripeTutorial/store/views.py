@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
@@ -60,6 +61,9 @@ class ProductListView(ListView):
     model = Product
 
 class PriceListView(ListView):
+    model = Price
+
+class PriceDetailView(DetailView):
     model = Price
 
 # Stripe webhook event handler (to validate payment)

@@ -8,7 +8,8 @@ from .views import (
     StripeIntentView,
     CustomPaymentView,
     ProductListView,
-    PriceListView
+    PriceListView,
+    PriceDetailView
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     # path('', ProductLandingPageView.as_view(), name='landing'),
     path("", ProductListView.as_view(),name="product-list"),
     path("price/", PriceListView.as_view(),name="price-list"),
+    path("price/<int:pk>/", PriceDetailView.as_view(), name="price-detail"),
     path('webhooks/stripe/', stripe_webhook, name='stripe-webhook'),
     path('create-payment-intent/<pk>/', StripeIntentView.as_view(), name='create-payment-intent'),
     path('custom-payment/', CustomPaymentView.as_view(), name='custom-payment'),
