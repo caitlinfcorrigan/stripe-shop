@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views import View
+from django.views.generic.list import ListView
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
@@ -42,18 +43,24 @@ class SuccessView(TemplateView):
 class CancelView(TemplateView):
     template_name = "cancel.html"
 
-class ProductLandingPageView(TemplateView):
-    template_name = "landing.html"
+# class ProductLandingPageView(TemplateView):
+#     template_name = "landing.html"
 
-    def get_context_data(self, **kwargs):
-        product = Product.objects.get(name="Test Product")
-        prices = Price.objects.filter(product=product)
-        context = super(ProductLandingPageView, self).get_context_data(**kwargs)
-        context.update({
-            "product": product,
-            "prices": prices
-        })
-        return context
+#     def get_context_data(self, **kwargs):
+#         products = Product.objects.all()
+#         # prices = Price.objects.filter(product=product)
+#         context = super(ProductLandingPageView, self).get_context_data(**kwargs)
+#         context.update({
+#             "product": product,
+#             "prices": prices
+#         })
+#         return context
+    
+class ProductListView(ListView):
+    model = Product
+
+class PriceListView(ListView):
+    model = Price
 
 # Stripe webhook event handler (to validate payment)
 # csrf exempt bc Stripe sends the POST request w/o token, which is normally required by Django

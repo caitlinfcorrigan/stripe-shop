@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Price List</h1>
+
+{% for p in price_list %}
+
+    <p>{{p.product}} - {{p.price}}</p>
+
+{% endfor %}
+
+{% endblock %}
