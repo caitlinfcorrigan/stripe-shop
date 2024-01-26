@@ -5,7 +5,7 @@
 
 {% for p in price_list %}
 
-    <a href="{% url 'price-detail' p.id %}">{{p.product}} - {{p.price}}</a>
+    <a href="{% url 'price-detail' p.id %}">{{p.product}} - ${{p.get_display_price}}</a>
 
 
 {% endfor %}

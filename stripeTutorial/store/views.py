@@ -160,3 +160,9 @@ class CustomPaymentView(TemplateView):
             "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
         })
         return context
+    
+def custom_payment(request):
+    # Select from Price as it has the FK
+    products = Price.objects.select_related('product').all()
+    return render(request, 'cust_pay.html', {"products":products, "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY})
+
