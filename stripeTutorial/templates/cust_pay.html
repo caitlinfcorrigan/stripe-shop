@@ -33,6 +33,7 @@
         </form>
     </div>
 </section>
+
 <script>
     var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
