@@ -68,7 +68,8 @@
         event.preventDefault();
         // Get the price for the payment intent
         var selectedPrice = document.getElementById("prices").value
-        // Complete payment when the submit button is clicked
+        // Create the payment intent using fetch
+        // Then complete payment when the submit button is clicked
         fetch(`/create-payment-intent/${selectedPrice}/`, {
         method: "POST",
         headers: {
