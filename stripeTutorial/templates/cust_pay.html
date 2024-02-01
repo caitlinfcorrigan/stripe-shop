@@ -6,7 +6,7 @@
         <div class="description">
             <h3>Products</h3>
             <hr />
-            <select>
+            <select id="prices">
                 {% for p in products %}
                 <option value="{{ p.id }}">{{ p.product }} - ${{ p.get_display_price }} - {{ p.product.stripe_product_id}} - {{p.stripe_price_id}}</option>
                 {% endfor %}
@@ -66,6 +66,7 @@
     var form = document.getElementById("payment-form");
     form.addEventListener("submit", function(event) {
         event.preventDefault();
+        // Get the price for the payment intent
         var selectedPrice = document.getElementById("prices").value
         // Complete payment when the submit button is clicked
         fetch(`/create-payment-intent/${selectedPrice}/`, {
